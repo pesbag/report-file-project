@@ -97,18 +97,20 @@ class Report()
         return allValid;
     }
 
-    static void insertDataToArr(string [][] allValidRows,string[] unitNames,string[] reportType,string[] reportStatus,int[] priorities,double[] score) {
+    static void insertDataToArr(string [][] allValidRows,string[] unitNames,ReportType[] reportType,ReportStatus[] reportStatus,int[] priorities,double[] score) {
+        int indexCounter = 0;
         for(int i = 0; i < allValidRows.Length; i++)
         {
             if (allValidRows[i] == null)
             {
                 continue;
             }
-                unitNames[i] = allValidRows[i][0];
-                reportType[i] = allValidRows[i][1];
-                priorities[i] = int.Parse(allValidRows[i][2]);
-                score[i] = double.Parse(allValidRows[i][3]);
-                reportStatus[i] = allValidRows[i][4];
+                unitNames[indexCounter] = allValidRows[i][0];
+                reportType[indexCounter] = Enum.Parse<ReportType>(allValidRows[i][1],true);
+                priorities[indexCounter] = int.Parse(allValidRows[i][2]);
+                score[indexCounter] = double.Parse(allValidRows[i][3]);
+                reportStatus[indexCounter] = Enum.Parse<ReportStatus>(allValidRows[i][4],true);
+                indexCounter += 1;
         }
 
     }
@@ -153,9 +155,9 @@ class Report()
             }
         return sum /validCount;
     }
-    static double FindMaxScore(double[] score) {
+    static double FindMaxScore(double[] score,int validCount) {
         double maxScore = -1.0;
-        for(int i = 0; i < score.Length; i++)
+        for(int i = 0; i < validCount; i++)
         {
             if (score[i] > maxScore)
             {
@@ -164,23 +166,69 @@ class Report()
         }
         return maxScore;
     }
-    static double FindMinScore() {
+    static double FindMinScore(double[] score,int validCount) {
         double minScore = 101.0;
-        for (int i = 0; i < score.Length; i++)
+        for (int i = 0; i < validCount; i++)
         {
-            if (score[i] > maxScore)
+            if (score[i] < minScore)
             {
-                maxScore = score[i];
+                minScore = score[i];
             }
         }
-        return maxScore;
+        return minScore;
     }
+    
+    static int CountByStatus(ReportStatus[] reportStatus,int validCount,ReportStatus status) {
+        int counter = 0;
+        for(int s=0; s<validCount; s++) {
+            if (status==reportStatus[s]) {
+                counter += 1;
+            }
+        }
+        return counter;
     }
-    static int CountByStatus() { }
-    static int CountByType() { }
-    static void DisplayBasicStatistic() { }
-    static void displayStatusCount() { }
-    static void DisplyTypeCounts() { }
+    static int CountByType(ReportType[] reportType,int validCount, ReportType type) {
+        int counter = 0;
+        for (int s = 0; s < validCount; s++)
+        {
+            if (type== reportType[s])
+            {
+                counter += 1;
+            }
+        }
+        return counter;
+    }
+    
+    static void DisplayBasicStatistic(double[] score, int validCount) {
+        double avgScore,minScore,maxScore;
+        avgScore = CalculateAverage(score, validCount);
+        maxScore = FindMaxScore(score, validCount);
+        minScore = FindMinScore(score, validCount);
+        Console.WriteLine($"===Report Statistics===\n" +
+            $"Total Reports:{validCount}\n" +
+            $"Averge Score:{avgScore}\n" +
+            $"Highest Score:{maxScore}\n" +
+            $"Lowest Score:{minScore}\n");
+
+    }
+    static void displayStatusCount(ReportStatus[] reportStatus,int validCount) {
+        int pending = CountByStatus(reportStatus,validCount, ReportStatus.Pending);
+        int approved = CountByStatus(reportStatus, validCount, ReportStatus.Approved);
+        int Rejected = CountByStatus(reportStatus, validCount, ReportStatus.Rejected);
+        Console.WriteLine($"===Reports by status===\n" +
+            $"Pending:{pending}\n" +
+            $"Approved:{approved}\n" +
+            $"Rejected:{Rejected}\n");
+    }
+    static void DisplyTypeCounts(ReportType[] reportType, int validCount) {
+        int collect = CountByType(reportType, validCount, ReportType.Collect);
+        int analyze = CountByType(reportType, validCount, ReportType.Analyze);
+        int recon = CountByType(reportType, validCount, ReportType.Recon);
+        Console.WriteLine($"===Reports by Type===\n" +
+            $"Collect:{collect}\n" +
+            $"Analyze:{analyze}\n" +
+            $"Recon:{recon}\n");
+    }
     static void DisplayHighestPriority() { }
     static void DisplayAveragesByPriority() { }
 
@@ -193,8 +241,8 @@ class Report()
         const int MAX_REPORTS = 100;
         int validCount = 0;
         string[] unitNames = new string[MAX_REPORTS];
-        string[] reportType = new string[MAX_REPORTS];
-        string[] reportStatus = new string[MAX_REPORTS];
+        ReportType[] reportType = new ReportType[MAX_REPORTS];
+        ReportStatus[] reportStatus = new ReportStatus[MAX_REPORTS];
         int[] priorities = new int[MAX_REPORTS];
         double[] score = new double[MAX_REPORTS];
 
@@ -215,13 +263,13 @@ class Report()
             insertDataToArr(allValidRows, unitNames, reportType, reportStatus, priorities, score);
             Console.WriteLine($"Stored {validCount} valid records for analysis");
             CalculateAverage(score,validCount);
-            FindMaxScore(score);
-            FindMinScore(score);
-            CountByStatus();
-            CountByType();
-            DisplayBasicStatistic();
-            displayStatusCount();
-            DisplyTypeCounts();
+            FindMaxScore(score,validCount);
+            FindMinScore(score,validCount);
+            //CountByStatus(reportStatus,);
+            //CountByType(reportType,);
+            DisplayBasicStatistic(score,validCount);
+            displayStatusCount(reportStatus, validCount);
+            DisplyTypeCounts(reportType, validCount);
             DisplayHighestPriority();
             DisplayAveragesByPriority();
         }
