@@ -25,7 +25,7 @@ class Report()
     static bool validateType(string type, out ReportType convertedType) {
         bool isValidType = Enum.TryParse<ReportType>(type, true, out convertedType);
         if(isValidType)
-            Console.WriteLine($"Type{convertedType}");
+            Console.WriteLine($"Type {convertedType}");
         else
             Console.WriteLine("Invalid record: Unknown report type");
         return isValidType;
@@ -33,7 +33,7 @@ class Report()
     static bool validateStatus(string status, out ReportStatus convertedStatus) {
         bool isValidStatus = Enum.TryParse<ReportStatus>(status, true, out convertedStatus);
         if (isValidStatus)
-            Console.WriteLine($"Type{convertedStatus}");
+            Console.WriteLine($"Type {convertedStatus}");
         else
             Console.WriteLine("Invalid record: Unknown report type"); return isValidStatus;
     }
@@ -68,15 +68,15 @@ class Report()
         return false;
     }
 
-    static bool checkLineValidity(string type,string priority,string score,string status)
+    static bool checkLineValidity(string unit, string type, string priority, string score, string status)
     {
         bool isValidType;
         bool allValid;
         bool isValidStatus;
         bool isValidPriority;
-        bool isValidScore;   
-        isValidType = validateType(type, out ReportType convertedStatus);
-        isValidStatus = validateStatus(status, out ReportStatus convertedType);
+        bool isValidScore;
+        isValidType = validateType(type, out ReportType convertedType);
+        isValidStatus = validateStatus(status, out ReportStatus convertedStatus);
         isValidPriority = validatePriority(priority, out int validPriority);
         isValidScore = validateScore(score, out double validScore);
         if (!isValidType) {
@@ -92,13 +92,36 @@ class Report()
         if (!isValidScore) {
             Console.WriteLine($"Invalid record: the score is not valid");
         }
-        allValid=isValidType&& isValidStatus&& isValidPriority&& isValidScore;
+        allValid = isValidType && isValidStatus && isValidPriority && isValidScore;
+        if (allValid) {Console.WriteLine($"Unit:{unit}\nType:{convertedType}\nPriority:{validPriority}\nScore:{validScore}\nStatus:{convertedStatus}"); }
         return allValid;
     }
-    static string[] analyzeLine(string[] rows) {
+
+    static void insertDataToArr(string [][] allValidRows,string[] unitNames,string[] reportType,string[] reportStatus,int[] priorities,double[] score) {
+        for(int i = 0; i < allValidRows.Length; i++)
+        {
+            if (allValidRows[i] == null)
+            {
+                continue;
+            }
+                unitNames[i] = allValidRows[i][0];
+                reportType[i] = allValidRows[i][1];
+                priorities[i] = int.Parse(allValidRows[i][2]);
+                score[i] = double.Parse(allValidRows[i][3]);
+                reportStatus[i] = allValidRows[i][4];
+        }
+
+    }
+    static string[][] analyzeLine(string[] rows) {
         string trimLine="";
         bool isValidLine;
         string[] splitReportArr;
+        string[][] allValidRows = new string[rows.Length][];
+        if (rows.Length == 0)
+        {
+            Console.WriteLine();
+        }
+
         for (int i = 0; i < rows.Length; i++)
             {
             trimLine = rows[i].Trim();
@@ -107,25 +130,104 @@ class Report()
             splitReportArr = trimLine.Split(',', StringSplitOptions.RemoveEmptyEntries);
             if (splitReportArr.Length != 5)
                 continue;
-            isValidLine = checkLineValidity(splitReportArr[1], splitReportArr[2], splitReportArr[3], splitReportArr[4]);
-            if(isValidLine)
+            isValidLine = checkLineValidity(splitReportArr[0], splitReportArr[1], splitReportArr[2], splitReportArr[3], splitReportArr[4]);
+            if (isValidLine)
+            {
                 Console.WriteLine("Valid record processed");
+                string[] validRow = new string[5];
+                validRow[0] = splitReportArr[0];
+                validRow[1] = splitReportArr[1];
+                validRow[2] = splitReportArr[2];
+                validRow[3] = splitReportArr[3];
+                validRow[4] = splitReportArr[4];
+                allValidRows[i] = validRow;
             }
-        return [];
+         }
+        return allValidRows;
+    }
+    static double CalculateAverage(double[] score,int validCount) {
+        double sum = 0.0;
+        for(int i = 0; i < validCount; i++)
+            {
+            sum += score[i];
+            }
+        return sum /validCount;
+    }
+    static double FindMaxScore(double[] score) {
+        double maxScore = -1.0;
+        for(int i = 0; i < score.Length; i++)
+        {
+            if (score[i] > maxScore)
+            {
+                maxScore = score[i];
+            }
         }
+        return maxScore;
+    }
+    static double FindMinScore() {
+        double minScore = 101.0;
+        for (int i = 0; i < score.Length; i++)
+        {
+            if (score[i] > maxScore)
+            {
+                maxScore = score[i];
+            }
+        }
+        return maxScore;
+    }
+    }
+    static int CountByStatus() { }
+    static int CountByType() { }
+    static void DisplayBasicStatistic() { }
+    static void displayStatusCount() { }
+    static void DisplyTypeCounts() { }
+    static void DisplayHighestPriority() { }
+    static void DisplayAveragesByPriority() { }
+
     static void Main()
     {
         string nameOfFile = "reports.txt";
         string[]? allRows;
         string[] rows;
+        string[][] allValidRows;
         const int MAX_REPORTS = 100;
+        int validCount = 0;
+        string[] unitNames = new string[MAX_REPORTS];
+        string[] reportType = new string[MAX_REPORTS];
+        string[] reportStatus = new string[MAX_REPORTS];
+        int[] priorities = new int[MAX_REPORTS];
+        double[] score = new double[MAX_REPORTS];
+
         rows = new string[MAX_REPORTS];
         allRows = openFile(nameOfFile);
         if(allRows is null)
         {
             Environment.Exit(1);
         }
-        analyzeLine(allRows);
-        Console.WriteLine($"File loaded: {allRows.Length} lines found");
+        allValidRows=analyzeLine(allRows);
+        for(int i = 0; i < allValidRows.Length; i++)
+        {
+            if (allValidRows[i] != null)
+                validCount += 1;
+        }
+        if (allValidRows.Length > 0) { 
+            Console.WriteLine($"Proccessing complete.\nFile loaded: {allRows.Length} lines found\nValid records:{validCount}\ninvalid records:{allRows.Length - validCount}");
+            insertDataToArr(allValidRows, unitNames, reportType, reportStatus, priorities, score);
+            Console.WriteLine($"Stored {validCount} valid records for analysis");
+            CalculateAverage(score,validCount);
+            FindMaxScore(score);
+            FindMinScore(score);
+            CountByStatus();
+            CountByType();
+            DisplayBasicStatistic();
+            displayStatusCount();
+            DisplyTypeCounts();
+            DisplayHighestPriority();
+            DisplayAveragesByPriority();
+        }
+            else {
+            Console.WriteLine("Error there is no any valid rows in file");
+        }
+        
     }
 }
