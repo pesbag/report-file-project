@@ -10,15 +10,16 @@ class Report()
     enum ReportStatus {Pending, Approved, Rejected}
     static string[]? LoadFile(string nameOfFile) {
         string[] allRows = [];
+        nameOfFile = Path.GetFileName(nameOfFile);
         if (!File.Exists(nameOfFile))
         {
-            Console.WriteLine($"Error: file {nameOfFile} not found");
+            Console.WriteLine($"Error: file {nameOfFile} not found\n");
             return null;
         }
         allRows=File.ReadAllLines(nameOfFile);
         if (allRows.Length == 0)
         {
-            Console.WriteLine("Error File is empty");
+            Console.WriteLine("Error File is empty\n");
             return null;
         }
         return allRows;
@@ -26,17 +27,17 @@ class Report()
     static bool validateType(string type, out ReportType convertedType) {
         bool isValidType = Enum.TryParse<ReportType>(type, true, out convertedType);
         if(isValidType)
-            Console.WriteLine($"Type {convertedType}");
+            Console.WriteLine($"Type {convertedType}\n");
         else
-            Console.WriteLine("Invalid record: Unknown report type");
+            Console.WriteLine("Invalid record: Unknown report type\n");
         return isValidType;
     }
     static bool validateStatus(string status, out ReportStatus convertedStatus) {
         bool isValidStatus = Enum.TryParse<ReportStatus>(status, true, out convertedStatus);
         if (isValidStatus)
-            Console.WriteLine($"Type {convertedStatus}");
+            Console.WriteLine($"Status {convertedStatus}\n");
         else
-            Console.WriteLine("Invalid record: Unknown report type"); return isValidStatus;
+            Console.WriteLine("Invalid record: Unknown report type\n"); return isValidStatus;
     }
     static bool validatePriority(string priority, out int validPriority)//int 1 to 5
     {
@@ -46,11 +47,11 @@ class Report()
                 return true;
             else
             {
-                Console.WriteLine("Invalid record: Priority is out of range, priority should be in range 1 to 5");
+                Console.WriteLine("Invalid record: Priority is out of range, priority should be in range 1 to 5\n");
                 return false;
             }
         }
-        Console.WriteLine("Invalid record: Priority is not valid number, priority should be an integer");
+        Console.WriteLine("Invalid record: Priority is not valid number, priority should be an integer\n");
         return false;
     }
     static bool validateScore(string score, out double validScore)//double 0.0 to 100.0
@@ -61,40 +62,58 @@ class Report()
                 return true;
             else
             {
-                Console.WriteLine("Invalid record: Score is out of range, score should be in range of 0.0 to 100.0");
+                Console.WriteLine("Invalid record: Score is out of range, score should be in range of 0.0 to 100.0\n");
                 return false;
             }
         }
-        Console.WriteLine("Invalid record: Score is not valid number, score should be a double");
+        Console.WriteLine("Invalid record: Score is not valid number, score should be a double\n");
         return false;
     }
-
-    static bool checkLineValidity(string unit, string type, string priority, string score, string status)
+    static bool ValidateUnit(string unit)
     {
+        if (!string.IsNullOrEmpty(unit))
+            return true;
+        return false;
+    }
+    static bool checkLineValidity(string unit, string type, string priority, string score, string status,
+                                 out ReportType convertedType, out int validPriority, out double validScore, out ReportStatus convertedStatus)
+    {
+        bool isValidUnit;
         bool isValidType;
         bool allValid;
         bool isValidStatus;
         bool isValidPriority;
         bool isValidScore;
-        isValidType = validateType(type, out ReportType convertedType);
-        isValidStatus = validateStatus(status, out ReportStatus convertedStatus);
-        isValidPriority = validatePriority(priority, out int validPriority);
-        isValidScore = validateScore(score, out double validScore);
+
+        isValidType = validateType(type, out convertedType);
+        isValidStatus = validateStatus(status, out convertedStatus);
+        isValidPriority = validatePriority(priority, out validPriority);
+        isValidScore = validateScore(score, out validScore);
+        isValidUnit = ValidateUnit(unit);
+
+        if (!isValidUnit)
+        {
+
+            Console.WriteLine($"Invalid record: the unit is not valid\n");
+        }
         if (!isValidType) {
 
-            Console.WriteLine($"Invalid record: the type is not valid");
+            Console.WriteLine($"Invalid record: the type is not valid\n");
         }
         if (!isValidStatus) {
-            Console.WriteLine($"Invalid record: the status is not valid");
+            Console.WriteLine($"Invalid record: the status is not valid\n");
         }
         if (!isValidPriority) {
-            Console.WriteLine($"Invalid record: the priority is not valid");
+            Console.WriteLine($"Invalid record: the priority is not valid\n");
         }
         if (!isValidScore) {
-            Console.WriteLine($"Invalid record: the score is not valid");
+            Console.WriteLine($"Invalid record: the score is not valid\n");
         }
+
         allValid = isValidType && isValidStatus && isValidPriority && isValidScore;
-        if (allValid) {Console.WriteLine($"Unit:{unit}\nType:{convertedType}\nPriority:{validPriority}\nScore:{validScore}\nStatus:{convertedStatus}"); }
+        
+        if (allValid)
+        {Console.WriteLine($"Unit:{unit}\nType:{convertedType}\nPriority:{validPriority}\nScore:{validScore}\nStatus:{convertedStatus}\n"); }
         return allValid;
     }
 
@@ -115,38 +134,47 @@ class Report()
         }
 
     }
-    static string[][] ProcessReports(string[] rows) {
+    static int ProcessReports(string[] rows, string[] unitNames, ReportType[] reportType, ReportStatus[] reportStatus, int[] priorities, double[] score) {
         string trimLine="";
         bool isValidLine;
         string[] splitReportArr;
-        string[][] allValidRows = new string[rows.Length][];
-        if (rows.Length == 0)
-        {
-            Console.WriteLine();
-        }
+        int validCount = 0;
 
         for (int i = 0; i < rows.Length; i++)
-            {
+        {
             trimLine = rows[i].Trim();
             if (string.IsNullOrEmpty(trimLine))
                 continue;
+            
             splitReportArr = trimLine.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            
             if (splitReportArr.Length != 5)
                 continue;
-            isValidLine = checkLineValidity(splitReportArr[0], splitReportArr[1], splitReportArr[2], splitReportArr[3], splitReportArr[4]);
+
+            isValidLine = checkLineValidity(splitReportArr[0],splitReportArr[1],splitReportArr[2],splitReportArr[3], splitReportArr[4],
+                                            out ReportType convertedType, out int validPriority, out double validScore, out ReportStatus convertedStatus);
+
             if (isValidLine)
             {
-                Console.WriteLine("Valid record processed");
-                string[] validRow = new string[5];
-                validRow[0] = splitReportArr[0];
-                validRow[1] = splitReportArr[1];
-                validRow[2] = splitReportArr[2];
-                validRow[3] = splitReportArr[3];
-                validRow[4] = splitReportArr[4];
-                allValidRows[i] = validRow;
+                Console.WriteLine("Valid record processed\n");
+                if (validCount < unitNames.Length)
+                {
+                    unitNames[validCount] = splitReportArr[0].Trim();
+                    reportType[validCount] = convertedType;
+                    priorities[validCount] = validPriority;
+                    score[validCount] = validScore;
+                    reportStatus[validCount] = convertedStatus;
+                    validCount++;
+
+                    Console.WriteLine($"Unit:{splitReportArr[0].Trim()}\n" +
+                                      $"Type:{convertedType}\n" +
+                                      $"Priority:{validPriority}\n" +
+                                      $"Score:{validScore}\n" +
+                                      $"Status: {convertedStatus}\n");
+                }
             }
-         }
-        return allValidRows;
+        }
+        return validCount;
     }
     static double CalculateAverage(double[] score,int validCount) {
         double sum = 0.0;
@@ -312,7 +340,6 @@ class Report()
         string nameOfFile = "reports.txt";
         string[]? allRows;
         string[] rows;
-        string[][] allValidRows;
         const int MAX_REPORTS = 100;
         int validCount = 0;
         string[] unitNames = new string[MAX_REPORTS];
@@ -323,20 +350,18 @@ class Report()
         rows = new string[MAX_REPORTS];
 
         allRows = LoadFile(nameOfFile);
+
         if(allRows is null)
         {
             Environment.Exit(1);
         }
-        allValidRows=ProcessReports(allRows);
-        for(int i = 0; i < allValidRows.Length; i++)
-        {
-            if (allValidRows[i] != null)
-                validCount += 1;
-        }
-        if (allValidRows.Length > 0) { 
-            Console.WriteLine($"Proccessing complete.\nFile loaded: {allRows.Length} lines found\nValid records:{validCount}\ninvalid records:{allRows.Length - validCount}");
-            insertDataToArr(allValidRows, unitNames, reportType, reportStatus, priorities, score);
-            Console.WriteLine($"Stored {validCount} valid records for analysis");
+
+        validCount = ProcessReports(allRows, unitNames, reportType, reportStatus, priorities, score);
+
+        if (validCount > 0) { 
+            Console.WriteLine($"File loaded: {allRows.Length} lines found.\nProccessing complete.\nValid records:{validCount}\ninvalid records:{allRows.Length - validCount}\n");
+            Console.WriteLine($"Stored {validCount} valid records for analysis\n");
+            
             CalculateAverage(score,validCount);
             FindMaxScore(score,validCount);
             FindMinScore(score,validCount);
@@ -347,7 +372,7 @@ class Report()
             DisplayAveragesByPriority(unitNames,reportType,reportStatus,priorities,score,validCount);
         }
             else {
-            Console.WriteLine("Error there is no any valid rows in file");
+            Console.WriteLine("Error there is no any valid rows in file\n");
         }
         
     }
