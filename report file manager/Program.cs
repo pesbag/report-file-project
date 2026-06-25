@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Net.NetworkInformation;
 namespace System.IO;
 
 class Report()
 {
     enum ReportType {Collect, Analyze, Recon, Intel}
     enum ReportStatus {Pending, Approved, Rejected}
-    static string[]? openFile(string nameOfFile) {
+    static string[]? LoadFile(string nameOfFile) {
         string[] allRows = [];
         if (!File.Exists(nameOfFile))
         {
@@ -114,7 +115,7 @@ class Report()
         }
 
     }
-    static string[][] analyzeLine(string[] rows) {
+    static string[][] ProcessReports(string[] rows) {
         string trimLine="";
         bool isValidLine;
         string[] splitReportArr;
@@ -206,7 +207,7 @@ class Report()
         minScore = FindMinScore(score, validCount);
         Console.WriteLine($"===Report Statistics===\n" +
             $"Total Reports:{validCount}\n" +
-            $"Averge Score:{avgScore}\n" +
+            $"Averge Score:{avgScore:0.##}\n" +
             $"Highest Score:{maxScore}\n" +
             $"Lowest Score:{minScore}\n");
 
@@ -224,13 +225,87 @@ class Report()
         int collect = CountByType(reportType, validCount, ReportType.Collect);
         int analyze = CountByType(reportType, validCount, ReportType.Analyze);
         int recon = CountByType(reportType, validCount, ReportType.Recon);
+        int intel = CountByType(reportType, validCount, ReportType.Intel);
         Console.WriteLine($"===Reports by Type===\n" +
             $"Collect:{collect}\n" +
             $"Analyze:{analyze}\n" +
-            $"Recon:{recon}\n");
+            $"Recon:{recon}\n" +
+            $"Intel:{intel}\n");
     }
-    static void DisplayHighestPriority() { }
-    static void DisplayAveragesByPriority() { }
+    static void DisplayHighestPriority(string[] unitNames, ReportType[] reportType,ReportStatus[] reportStatus,int[] priorities,double[] score,int validCount) {
+        double highestPriority = 0;
+        int indexOfHighestPriority = -1;
+        for(int i = 0; i < validCount; i++) {
+            if (reportStatus[i]==ReportStatus.Approved) {
+                if (priorities[i] > highestPriority)
+                {
+                    highestPriority = priorities[i];
+                    indexOfHighestPriority = i;
+                }
+            }
+        }
+        Console.WriteLine($"===Highest Priority Approved Report===\n" +
+            $"Unit:{unitNames[indexOfHighestPriority]}\n" +
+            $"Type:{reportType[indexOfHighestPriority]}\n" +
+            $"Priority:{highestPriority}\n" +
+            $"Score:{score[indexOfHighestPriority]}\n");
+    
+    }          
+    static void DisplayAveragesByPriority(string[] unitNames, ReportType[] reportType, ReportStatus[] reportStatus, int[] priorities, double[] score, int validCount) {
+        double sumPriority1 = 0;
+        double sumPriority2 = 0;
+        double sumPriority3 = 0;
+        double sumPriority4 = 0;
+        double sumPriority5 = 0;
+        double avgPriority1 = 0;
+        double avgPriority2 = 0;
+        double avgPriority3 = 0;
+        double avgPriority4 = 0;
+        double avgPriority5 = 0;
+        int totalPriority1 = 0;
+        int totalPriority2 = 0;
+        int totalPriority3 = 0;
+        int totalPriority4 = 0;
+        int totalPriority5 = 0;
+            for (int i = 0; i < validCount; i++)
+        {
+            switch (priorities[i])
+            {
+                case (1):
+                    sumPriority1 += score[i];
+                    totalPriority1 += 1;
+                    break;
+                case (2):
+                    sumPriority2 += score[i];
+                    totalPriority2 += 1;
+                    break;
+                case (3):
+                    sumPriority3 += score[i];
+                    totalPriority3 += 1;
+                    break;
+                case (4):
+                    sumPriority4 += score[i];
+                    totalPriority4 += 1;
+                    break;
+                case (5):
+                    sumPriority5 += score[i];
+                    totalPriority5 += 1;
+                    break;
+            }
+          }
+        avgPriority1 = totalPriority1 > 0 ? (sumPriority1 / totalPriority1) : 0;
+        avgPriority2 = totalPriority2 > 0 ? sumPriority2 / totalPriority2 : 0;
+        avgPriority3 = totalPriority3 > 0 ? sumPriority3 / totalPriority3 : 0;
+        avgPriority4 = totalPriority4 > 0 ? sumPriority4 / totalPriority4 : 0;
+        avgPriority5 = totalPriority5 > 0 ? sumPriority5 / totalPriority5 : 0;
+        Console.WriteLine($"===Average  Score By Priority===\n" +
+            $"Priority 1:{(avgPriority1 != 0 ? (avgPriority1).ToString("0.##"):"No reports")}\n" +
+            $"Priority 2:{(avgPriority2 != 0 ? avgPriority2.ToString("0.##") : "No reports")}\n" +
+            $"Priority 3:{(avgPriority3 != 0 ? avgPriority3.ToString("0.##") : "No reports")}\n" +
+            $"Priority 4:{(avgPriority4 != 0 ? avgPriority4.ToString("0.##") : "No reports")}\n" +
+            $"Priority 5:{(avgPriority5 != 0 ? avgPriority5.ToString("0.##") : "No reports")}\n");
+
+    }
 
     static void Main()
     {
@@ -245,14 +320,14 @@ class Report()
         ReportStatus[] reportStatus = new ReportStatus[MAX_REPORTS];
         int[] priorities = new int[MAX_REPORTS];
         double[] score = new double[MAX_REPORTS];
-
         rows = new string[MAX_REPORTS];
-        allRows = openFile(nameOfFile);
+
+        allRows = LoadFile(nameOfFile);
         if(allRows is null)
         {
             Environment.Exit(1);
         }
-        allValidRows=analyzeLine(allRows);
+        allValidRows=ProcessReports(allRows);
         for(int i = 0; i < allValidRows.Length; i++)
         {
             if (allValidRows[i] != null)
@@ -265,13 +340,11 @@ class Report()
             CalculateAverage(score,validCount);
             FindMaxScore(score,validCount);
             FindMinScore(score,validCount);
-            //CountByStatus(reportStatus,);
-            //CountByType(reportType,);
             DisplayBasicStatistic(score,validCount);
             displayStatusCount(reportStatus, validCount);
             DisplyTypeCounts(reportType, validCount);
-            DisplayHighestPriority();
-            DisplayAveragesByPriority();
+            DisplayHighestPriority(unitNames, reportType, reportStatus, priorities, score,validCount);
+            DisplayAveragesByPriority(unitNames,reportType,reportStatus,priorities,score,validCount);
         }
             else {
             Console.WriteLine("Error there is no any valid rows in file");
