@@ -8,22 +8,27 @@ class Report()
 {
     enum ReportType {Collect, Analyze, Recon, Intel}
     enum ReportStatus {Pending, Approved, Rejected}
-    static string[]? LoadFile(string nameOfFile) {
+    static string[]? LoadFile(string pathOfFile) {
         string[] allRows = [];
-        nameOfFile = Path.GetFileName(nameOfFile);
+        string nameOfFile;
+
+        nameOfFile = Path.GetFileName(pathOfFile);
+
         if (!File.Exists(nameOfFile))
         {
             Console.WriteLine($"Error: file {nameOfFile} not found\n");
             return null;
         }
+
         allRows=File.ReadAllLines(nameOfFile);
+
         if (allRows.Length == 0)
         {
             Console.WriteLine("Error File is empty\n");
             return null;
         }
         return allRows;
-            }
+    }
     static bool validateType(string type, out ReportType convertedType) {
         bool isValidType = Enum.TryParse<ReportType>(type, true, out convertedType);
         if(isValidType)
@@ -73,7 +78,11 @@ class Report()
     {
         if (!string.IsNullOrEmpty(unit))
             return true;
-        return false;
+        else
+        {
+            Console.WriteLine("Invalid record: Unit name should contain any characters");
+            return false;
+        }
     }
     static bool checkLineValidity(string unit, string type, string priority, string score, string status,
                                  out ReportType convertedType, out int validPriority, out double validScore, out ReportStatus convertedStatus)
@@ -91,13 +100,10 @@ class Report()
         isValidScore = validateScore(score, out validScore);
         isValidUnit = ValidateUnit(unit);
 
-        if (!isValidUnit)
-        {
-
+        if (!isValidUnit){
             Console.WriteLine($"Invalid record: the unit is not valid\n");
         }
         if (!isValidType) {
-
             Console.WriteLine($"Invalid record: the type is not valid\n");
         }
         if (!isValidStatus) {
@@ -112,27 +118,9 @@ class Report()
 
         allValid = isValidType && isValidStatus && isValidPriority && isValidScore;
         
-        if (allValid)
-        {Console.WriteLine($"Unit:{unit}\nType:{convertedType}\nPriority:{validPriority}\nScore:{validScore}\nStatus:{convertedStatus}\n"); }
+        if (allValid){
+            Console.WriteLine($"\nUnit:{unit}\nType:{convertedType}\nPriority:{validPriority}\nScore:{validScore}\nStatus:{convertedStatus}\n"); }
         return allValid;
-    }
-
-    static void insertDataToArr(string [][] allValidRows,string[] unitNames,ReportType[] reportType,ReportStatus[] reportStatus,int[] priorities,double[] score) {
-        int indexCounter = 0;
-        for(int i = 0; i < allValidRows.Length; i++)
-        {
-            if (allValidRows[i] == null)
-            {
-                continue;
-            }
-                unitNames[indexCounter] = allValidRows[i][0];
-                reportType[indexCounter] = Enum.Parse<ReportType>(allValidRows[i][1],true);
-                priorities[indexCounter] = int.Parse(allValidRows[i][2]);
-                score[indexCounter] = double.Parse(allValidRows[i][3]);
-                reportStatus[indexCounter] = Enum.Parse<ReportStatus>(allValidRows[i][4],true);
-                indexCounter += 1;
-        }
-
     }
     static int ProcessReports(string[] rows, string[] unitNames, ReportType[] reportType, ReportStatus[] reportStatus, int[] priorities, double[] score) {
         string trimLine="";
@@ -172,6 +160,7 @@ class Report()
                                       $"Score:{validScore}\n" +
                                       $"Status: {convertedStatus}\n");
                 }
+                else{Console.WriteLine($"Error: there is too much lines in file, it is possible to prosess not more then {unitNames.Length} lines");}
             }
         }
         return validCount;
@@ -182,7 +171,7 @@ class Report()
             {
             sum += score[i];
             }
-        return sum /validCount;
+        return sum/(double)validCount;
     }
     static double FindMaxScore(double[] score,int validCount) {
         double maxScore = -1.0;
@@ -209,8 +198,10 @@ class Report()
     
     static int CountByStatus(ReportStatus[] reportStatus,int validCount,ReportStatus status) {
         int counter = 0;
-        for(int s=0; s<validCount; s++) {
-            if (status==reportStatus[s]) {
+        for(int s=0; s<validCount; s++)
+        {
+            if (status==reportStatus[s])
+            {
                 counter += 1;
             }
         }
@@ -220,7 +211,7 @@ class Report()
         int counter = 0;
         for (int s = 0; s < validCount; s++)
         {
-            if (type== reportType[s])
+            if (type == reportType[s])
             {
                 counter += 1;
             }
@@ -233,32 +224,32 @@ class Report()
         avgScore = CalculateAverage(score, validCount);
         maxScore = FindMaxScore(score, validCount);
         minScore = FindMinScore(score, validCount);
-        Console.WriteLine($"===Report Statistics===\n" +
-            $"Total Reports:{validCount}\n" +
-            $"Averge Score:{avgScore:0.##}\n" +
-            $"Highest Score:{maxScore}\n" +
-            $"Lowest Score:{minScore}\n");
+        Console.WriteLine($"=== Report Statistics ===\n\n" +
+                          $"      Total Reports:{validCount}\n" +
+                          $"      Averge Score:{avgScore:0.##}\n" +
+                          $"      Highest Score:{maxScore}\n" +
+                          $"       Lowest Score:{minScore}\n");
 
     }
     static void displayStatusCount(ReportStatus[] reportStatus,int validCount) {
         int pending = CountByStatus(reportStatus,validCount, ReportStatus.Pending);
         int approved = CountByStatus(reportStatus, validCount, ReportStatus.Approved);
         int Rejected = CountByStatus(reportStatus, validCount, ReportStatus.Rejected);
-        Console.WriteLine($"===Reports by status===\n" +
-            $"Pending:{pending}\n" +
-            $"Approved:{approved}\n" +
-            $"Rejected:{Rejected}\n");
+        Console.WriteLine($"=== Reports by status ===\n\n" +
+                          $"        Pending:{pending}\n" +
+                          $"        Approved:{approved}\n" +
+                          $"        Rejected:{Rejected}\n");
     }
     static void DisplyTypeCounts(ReportType[] reportType, int validCount) {
         int collect = CountByType(reportType, validCount, ReportType.Collect);
         int analyze = CountByType(reportType, validCount, ReportType.Analyze);
         int recon = CountByType(reportType, validCount, ReportType.Recon);
         int intel = CountByType(reportType, validCount, ReportType.Intel);
-        Console.WriteLine($"===Reports by Type===\n" +
-            $"Collect:{collect}\n" +
-            $"Analyze:{analyze}\n" +
-            $"Recon:{recon}\n" +
-            $"Intel:{intel}\n");
+        Console.WriteLine($"=== Reports by Type ===\n\n" +
+                          $"       Collect:{collect}\n" +
+                          $"       Analyze:{analyze}\n" +
+                          $"       Recon:{recon}\n" +
+                          $"       Intel:{intel}\n");
     }
     static void DisplayHighestPriority(string[] unitNames, ReportType[] reportType,ReportStatus[] reportStatus,int[] priorities,double[] score,int validCount) {
         double highestPriority = 0;
@@ -272,12 +263,11 @@ class Report()
                 }
             }
         }
-        Console.WriteLine($"===Highest Priority Approved Report===\n" +
-            $"Unit:{unitNames[indexOfHighestPriority]}\n" +
-            $"Type:{reportType[indexOfHighestPriority]}\n" +
-            $"Priority:{highestPriority}\n" +
-            $"Score:{score[indexOfHighestPriority]}\n");
-    
+        Console.WriteLine($"===Highest Priority Approved Report===\n\n" +
+                          $"            Unit:{unitNames[indexOfHighestPriority]}\n" +
+                          $"            Type:{reportType[indexOfHighestPriority]}\n" +
+                          $"            Priority:{highestPriority}\n" +
+                          $"            Score:{score[indexOfHighestPriority]}\n");
     }          
     static void DisplayAveragesByPriority(string[] unitNames, ReportType[] reportType, ReportStatus[] reportStatus, int[] priorities, double[] score, int validCount) {
         double sumPriority1 = 0;
@@ -296,45 +286,43 @@ class Report()
         int totalPriority4 = 0;
         int totalPriority5 = 0;
             for (int i = 0; i < validCount; i++)
-        {
-            switch (priorities[i])
             {
-                case (1):
-                    sumPriority1 += score[i];
-                    totalPriority1 += 1;
-                    break;
-                case (2):
-                    sumPriority2 += score[i];
-                    totalPriority2 += 1;
-                    break;
-                case (3):
-                    sumPriority3 += score[i];
-                    totalPriority3 += 1;
-                    break;
-                case (4):
-                    sumPriority4 += score[i];
-                    totalPriority4 += 1;
-                    break;
-                case (5):
-                    sumPriority5 += score[i];
-                    totalPriority5 += 1;
-                    break;
+                switch (priorities[i])
+                {
+                    case (1):
+                        sumPriority1 += score[i];
+                        totalPriority1 += 1;
+                        break;
+                    case (2):
+                        sumPriority2 += score[i];
+                        totalPriority2 += 1;
+                        break;
+                    case (3):
+                        sumPriority3 += score[i];
+                        totalPriority3 += 1;
+                        break;
+                    case (4):
+                        sumPriority4 += score[i];
+                        totalPriority4 += 1;
+                        break;
+                    case (5):
+                        sumPriority5 += score[i];
+                        totalPriority5 += 1;
+                        break;
+                }
             }
-          }
-        avgPriority1 = totalPriority1 > 0 ? (sumPriority1 / totalPriority1) : 0;
+        avgPriority1 = totalPriority1 > 0 ? sumPriority1 / totalPriority1 : 0;
         avgPriority2 = totalPriority2 > 0 ? sumPriority2 / totalPriority2 : 0;
         avgPriority3 = totalPriority3 > 0 ? sumPriority3 / totalPriority3 : 0;
         avgPriority4 = totalPriority4 > 0 ? sumPriority4 / totalPriority4 : 0;
         avgPriority5 = totalPriority5 > 0 ? sumPriority5 / totalPriority5 : 0;
-        Console.WriteLine($"===Average  Score By Priority===\n" +
-            $"Priority 1:{(avgPriority1 != 0 ? (avgPriority1).ToString("0.##"):"No reports")}\n" +
-            $"Priority 2:{(avgPriority2 != 0 ? avgPriority2.ToString("0.##") : "No reports")}\n" +
-            $"Priority 3:{(avgPriority3 != 0 ? avgPriority3.ToString("0.##") : "No reports")}\n" +
-            $"Priority 4:{(avgPriority4 != 0 ? avgPriority4.ToString("0.##") : "No reports")}\n" +
-            $"Priority 5:{(avgPriority5 != 0 ? avgPriority5.ToString("0.##") : "No reports")}\n");
-
+        Console.WriteLine($"=== Average  Score By Priority ===\n\n" +
+                          $"          Priority 1:{(avgPriority1 != 0 ? (avgPriority1).ToString("0.##"):"No reports")}\n" +
+                          $"          Priority 2:{(avgPriority2 != 0 ? avgPriority2.ToString("0.##") : "No reports")}\n" +
+                          $"          Priority 3:{(avgPriority3 != 0 ? avgPriority3.ToString("0.##") : "No reports")}\n" +
+                          $"          Priority 4:{(avgPriority4 != 0 ? avgPriority4.ToString("0.##") : "No reports")}\n" +
+                          $"          Priority 5:{(avgPriority5 != 0 ? avgPriority5.ToString("0.##") : "No reports")}\n");
     }
-
     static void Main()
     {
         string nameOfFile = "reports.txt";
