@@ -1,0 +1,509 @@
+Type Collect
+
+Status Approved
+
+
+Unit:Alpha
+Type:Collect
+Priority:3
+Score:87.5
+Status:Approved
+
+Valid record processed
+
+Unit:Alpha
+Type:Collect
+Priority:3
+Score:87.5
+Status: Approved
+
+Type Analyze
+
+Status Approved
+
+
+Unit:Bravo
+Type:Analyze
+Priority:5
+Score:92
+Status:Approved
+
+Valid record processed
+
+Unit:Bravo
+Type:Analyze
+Priority:5
+Score:92
+Status: Approved
+
+Type Recon
+
+Status Pending
+
+
+Unit:Charlie
+Type:Recon
+Priority:2
+Score:45.3
+Status:Pending
+
+Valid record processed
+
+Unit:Charlie
+Type:Recon
+Priority:2
+Score:45.3
+Status: Pending
+
+Type Intel
+
+Status Approved
+
+
+Unit:Delta
+Type:Intel
+Priority:4
+Score:78.9
+Status:Approved
+
+Valid record processed
+
+Unit:Delta
+Type:Intel
+Priority:4
+Score:78.9
+Status: Approved
+
+Type Collect
+
+Status Rejected
+
+
+Unit:Alpha
+Type:Collect
+Priority:1
+Score:63.2
+Status:Rejected
+
+Valid record processed
+
+Unit:Alpha
+Type:Collect
+Priority:1
+Score:63.2
+Status: Rejected
+
+Invalid record: Unknown report type
+
+Status Approved
+
+Invalid record: the type is not valid
+
+Type Analyze
+
+Status Approved
+
+Invalid record: Priority is out of range, priority should be in range 1 to 5
+
+Invalid record: the priority is not valid
+
+Type Collect
+
+Status Pending
+
+Invalid record: Score is not valid number, score should be a double
+
+Invalid record: the score is not valid
+
+Type Recon
+
+Status Approved
+
+
+Unit:Golf
+Type:Recon
+Priority:2
+Score:55.7
+Status:Approved
+
+Valid record processed
+
+Unit:Golf
+Type:Recon
+Priority:2
+Score:55.7
+Status: Approved
+
+Type Intel
+
+Status Pending
+
+Invalid record: Score is out of range, score should be in range of 0.0 to 100.0
+
+Invalid record: the score is not valid
+
+Type Collect
+
+Status Approved
+
+
+Unit:India
+Type:Collect
+Priority:3
+Score:72.8
+Status:Approved
+
+Valid record processed
+
+Unit:India
+Type:Collect
+Priority:3
+Score:72.8
+Status: Approved
+
+Type Analyze
+
+Status Pending
+
+
+Unit:Juliet
+Type:Analyze
+Priority:5
+Score:89.4
+Status:Pending
+
+Valid record processed
+
+Unit:Juliet
+Type:Analyze
+Priority:5
+Score:89.4
+Status: Pending
+
+Type Recon
+
+Status Rejected
+
+
+Unit:Kilo
+Type:Recon
+Priority:1
+Score:34.6
+Status:Rejected
+
+Valid record processed
+
+Unit:Kilo
+Type:Recon
+Priority:1
+Score:34.6
+Status: Rejected
+
+Type Intel
+
+Status Approved
+
+
+Unit:Lima
+Type:Intel
+Priority:3
+Score:67.2
+Status:Approved
+
+Valid record processed
+
+Unit:Lima
+Type:Intel
+Priority:3
+Score:67.2
+Status: Approved
+
+Type Collect
+
+Status Approved
+
+
+Unit:Mike
+Type:Collect
+Priority:4
+Score:91.3
+Status:Approved
+
+Valid record processed
+
+Unit:Mike
+Type:Collect
+Priority:4
+Score:91.3
+Status: Approved
+
+Type Analyze
+
+Status Pending
+
+
+Unit:November
+Type:Analyze
+Priority:2
+Score:58.9
+Status:Pending
+
+Valid record processed
+
+Unit:November
+Type:Analyze
+Priority:2
+Score:58.9
+Status: Pending
+
+Type Recon
+
+Status Approved
+
+
+Unit:Oscar
+Type:Recon
+Priority:5
+Score:99.8
+Status:Approved
+
+Valid record processed
+
+Unit:Oscar
+Type:Recon
+Priority:5
+Score:99.8
+Status: Approved
+
+Type Intel
+
+Status Rejected
+
+
+Unit:Papa
+Type:Intel
+Priority:1
+Score:42.1
+Status:Rejected
+
+Valid record processed
+
+Unit:Papa
+Type:Intel
+Priority:1
+Score:42.1
+Status: Rejected
+
+Type Collect
+
+Status Approved
+
+
+Unit:Quebec
+Type:Collect
+Priority:3
+Score:76.5
+Status:Approved
+
+Valid record processed
+
+Unit:Quebec
+Type:Collect
+Priority:3
+Score:76.5
+Status: Approved
+
+Type Analyze
+
+Status Approved
+
+
+Unit:Romeo
+Type:Analyze
+Priority:4
+Score:85.7
+Status:Approved
+
+Valid record processed
+
+Unit:Romeo
+Type:Analyze
+Priority:4
+Score:85.7
+Status: Approved
+
+Type Collect
+
+Status Approved
+
+
+Unit:Sierra
+Type:Collect
+Priority:2
+Score:88.5
+Status:Approved
+
+Valid record processed
+
+Unit:Sierra
+Type:Collect
+Priority:2
+Score:88.5
+Status: Approved
+
+Type Intel
+
+Status Approved
+
+
+Unit:Tango  
+Type:Intel
+Priority:3
+Score:77.2
+Status:Approved
+
+Valid record processed
+
+Unit:Tango
+Type:Intel
+Priority:3
+Score:77.2
+Status: Approved
+
+Type Recon
+
+Status Pending
+
+
+Unit:Uniform
+Type:Recon
+Priority:5
+Score:91
+Status:Pending
+
+Valid record processed
+
+Unit:Uniform
+Type:Recon
+Priority:5
+Score:91
+Status: Pending
+
+Type Analyze
+
+Status Approved
+
+
+Unit:Victor
+Type:Analyze
+Priority:4
+Score:82.3
+Status:Approved
+
+Valid record processed
+
+Unit:Victor
+Type:Analyze
+Priority:4
+Score:82.3
+Status: Approved
+
+Type Collect
+
+Status Approved
+
+
+Unit:Whiskey
+Type:Collect
+Priority:3
+Score:75.5
+Status:Approved
+
+Valid record processed
+
+Unit:Whiskey
+Type:Collect
+Priority:3
+Score:75.5
+Status: Approved
+
+Type Intel
+
+Status Approved
+
+
+Unit:Yankee
+Type:Intel
+Priority:3
+Score:100
+Status:Approved
+
+Valid record processed
+
+Unit:Yankee
+Type:Intel
+Priority:3
+Score:100
+Status: Approved
+
+Type Recon
+
+Status Rejected
+
+
+Unit:Zulu
+Type:Recon
+Priority:1
+Score:0
+Status:Rejected
+
+Valid record processed
+
+Unit:Zulu
+Type:Recon
+Priority:1
+Score:0
+Status: Rejected
+
+File loaded: 27 lines found.
+Proccessing complete.
+Valid records:23
+invalid records:4
+
+Stored 23 valid records for analysis
+
+=== Report Statistics ===
+
+      Total Reports:23
+      Averge Score:71.97
+      Highest Score:100
+       Lowest Score:0
+
+=== Reports by status ===
+
+        Pending:4
+        Approved:15
+        Rejected:4
+
+=== Reports by Type ===
+
+       Collect:7
+       Analyze:5
+       Recon:6
+       Intel:5
+
+===Highest Priority Approved Report===
+
+            Unit:Bravo
+            Type:Analyze
+            Priority:5
+            Score:92
+
+=== Average  Score By Priority ===
+
+          Priority 1:34.98
+          Priority 2:62.1
+          Priority 3:79.53
+          Priority 4:84.55
+          Priority 5:93.05
+

@@ -16,7 +16,7 @@ class Report()
 
         if (!File.Exists(nameOfFile))
         {
-            Console.WriteLine($"Error: file {nameOfFile} not found\n");
+            writeToFileAndTerminal($"Error: file {nameOfFile} not found\n");
             return null;
         }
 
@@ -24,7 +24,7 @@ class Report()
 
         if (allRows.Length == 0)
         {
-            Console.WriteLine("Error File is empty\n");
+            writeToFileAndTerminal("Error File is empty\n");
             return null;
         }
         return allRows;
@@ -32,17 +32,17 @@ class Report()
     static bool validateType(string type, out ReportType convertedType) {
         bool isValidType = Enum.TryParse<ReportType>(type, true, out convertedType);
         if(isValidType)
-            Console.WriteLine($"Type {convertedType}\n");
+            writeToFileAndTerminal($"Type {convertedType}\n");
         else
-            Console.WriteLine("Invalid record: Unknown report type\n");
+            writeToFileAndTerminal("Invalid record: Unknown report type\n");
         return isValidType;
     }
     static bool validateStatus(string status, out ReportStatus convertedStatus) {
         bool isValidStatus = Enum.TryParse<ReportStatus>(status, true, out convertedStatus);
         if (isValidStatus)
-            Console.WriteLine($"Status {convertedStatus}\n");
+            writeToFileAndTerminal($"Status {convertedStatus}\n");
         else
-            Console.WriteLine("Invalid record: Unknown report type\n"); return isValidStatus;
+            writeToFileAndTerminal("Invalid record: Unknown report type\n"); return isValidStatus;
     }
     static bool validatePriority(string priority, out int validPriority)//int 1 to 5
     {
@@ -52,11 +52,11 @@ class Report()
                 return true;
             else
             {
-                Console.WriteLine("Invalid record: Priority is out of range, priority should be in range 1 to 5\n");
+                writeToFileAndTerminal("Invalid record: Priority is out of range, priority should be in range 1 to 5\n");
                 return false;
             }
         }
-        Console.WriteLine("Invalid record: Priority is not valid number, priority should be an integer\n");
+        writeToFileAndTerminal("Invalid record: Priority is not valid number, priority should be an integer\n");
         return false;
     }
     static bool validateScore(string score, out double validScore)//double 0.0 to 100.0
@@ -67,11 +67,11 @@ class Report()
                 return true;
             else
             {
-                Console.WriteLine("Invalid record: Score is out of range, score should be in range of 0.0 to 100.0\n");
+                writeToFileAndTerminal("Invalid record: Score is out of range, score should be in range of 0.0 to 100.0\n");
                 return false;
             }
         }
-        Console.WriteLine("Invalid record: Score is not valid number, score should be a double\n");
+        writeToFileAndTerminal("Invalid record: Score is not valid number, score should be a double\n");
         return false;
     }
     static bool ValidateUnit(string unit)
@@ -80,7 +80,7 @@ class Report()
             return true;
         else
         {
-            Console.WriteLine("Invalid record: Unit name should contain any characters");
+            writeToFileAndTerminal("Invalid record: Unit name should contain any characters");
             return false;
         }
     }
@@ -101,25 +101,25 @@ class Report()
         isValidUnit = ValidateUnit(unit);
 
         if (!isValidUnit){
-            Console.WriteLine($"Invalid record: the unit is not valid\n");
+            writeToFileAndTerminal($"Invalid record: the unit is not valid\n");
         }
         if (!isValidType) {
-            Console.WriteLine($"Invalid record: the type is not valid\n");
+            writeToFileAndTerminal($"Invalid record: the type is not valid\n");
         }
         if (!isValidStatus) {
-            Console.WriteLine($"Invalid record: the status is not valid\n");
+            writeToFileAndTerminal($"Invalid record: the status is not valid\n");
         }
         if (!isValidPriority) {
-            Console.WriteLine($"Invalid record: the priority is not valid\n");
+            writeToFileAndTerminal($"Invalid record: the priority is not valid\n");
         }
         if (!isValidScore) {
-            Console.WriteLine($"Invalid record: the score is not valid\n");
+            writeToFileAndTerminal($"Invalid record: the score is not valid\n");
         }
 
         allValid = isValidType && isValidStatus && isValidPriority && isValidScore;
         
         if (allValid){
-            Console.WriteLine($"\nUnit:{unit}\nType:{convertedType}\nPriority:{validPriority}\nScore:{validScore}\nStatus:{convertedStatus}\n"); }
+            writeToFileAndTerminal($"\nUnit:{unit}\nType:{convertedType}\nPriority:{validPriority}\nScore:{validScore}\nStatus:{convertedStatus}\n"); }
         return allValid;
     }
     static int ProcessReports(string[] rows, string[] unitNames, ReportType[] reportType, ReportStatus[] reportStatus, int[] priorities, double[] score) {
@@ -144,7 +144,7 @@ class Report()
 
             if (isValidLine)
             {
-                Console.WriteLine("Valid record processed\n");
+                writeToFileAndTerminal("Valid record processed\n");
                 if (validCount < unitNames.Length)
                 {
                     unitNames[validCount] = splitReportArr[0].Trim();
@@ -154,13 +154,13 @@ class Report()
                     reportStatus[validCount] = convertedStatus;
                     validCount++;
 
-                    Console.WriteLine($"Unit:{splitReportArr[0].Trim()}\n" +
+                    writeToFileAndTerminal($"Unit:{splitReportArr[0].Trim()}\n" +
                                       $"Type:{convertedType}\n" +
                                       $"Priority:{validPriority}\n" +
                                       $"Score:{validScore}\n" +
                                       $"Status: {convertedStatus}\n");
                 }
-                else{Console.WriteLine($"Error: there is too much lines in file, it is possible to prosess not more then {unitNames.Length} lines");}
+                else{writeToFileAndTerminal($"Error: there is too much lines in file, it is possible to prosess not more then {unitNames.Length} lines");}
             }
         }
         return validCount;
@@ -224,7 +224,7 @@ class Report()
         avgScore = CalculateAverage(score, validCount);
         maxScore = FindMaxScore(score, validCount);
         minScore = FindMinScore(score, validCount);
-        Console.WriteLine($"=== Report Statistics ===\n\n" +
+        writeToFileAndTerminal($"=== Report Statistics ===\n\n" +
                           $"      Total Reports:{validCount}\n" +
                           $"      Averge Score:{avgScore:0.##}\n" +
                           $"      Highest Score:{maxScore}\n" +
@@ -235,7 +235,7 @@ class Report()
         int pending = CountByStatus(reportStatus,validCount, ReportStatus.Pending);
         int approved = CountByStatus(reportStatus, validCount, ReportStatus.Approved);
         int Rejected = CountByStatus(reportStatus, validCount, ReportStatus.Rejected);
-        Console.WriteLine($"=== Reports by status ===\n\n" +
+        writeToFileAndTerminal($"=== Reports by status ===\n\n" +
                           $"        Pending:{pending}\n" +
                           $"        Approved:{approved}\n" +
                           $"        Rejected:{Rejected}\n");
@@ -245,7 +245,7 @@ class Report()
         int analyze = CountByType(reportType, validCount, ReportType.Analyze);
         int recon = CountByType(reportType, validCount, ReportType.Recon);
         int intel = CountByType(reportType, validCount, ReportType.Intel);
-        Console.WriteLine($"=== Reports by Type ===\n\n" +
+        writeToFileAndTerminal($"=== Reports by Type ===\n\n" +
                           $"       Collect:{collect}\n" +
                           $"       Analyze:{analyze}\n" +
                           $"       Recon:{recon}\n" +
@@ -263,7 +263,7 @@ class Report()
                 }
             }
         }
-        Console.WriteLine($"===Highest Priority Approved Report===\n\n" +
+        writeToFileAndTerminal($"===Highest Priority Approved Report===\n\n" +
                           $"            Unit:{unitNames[indexOfHighestPriority]}\n" +
                           $"            Type:{reportType[indexOfHighestPriority]}\n" +
                           $"            Priority:{highestPriority}\n" +
@@ -316,12 +316,18 @@ class Report()
         avgPriority3 = totalPriority3 > 0 ? sumPriority3 / totalPriority3 : 0;
         avgPriority4 = totalPriority4 > 0 ? sumPriority4 / totalPriority4 : 0;
         avgPriority5 = totalPriority5 > 0 ? sumPriority5 / totalPriority5 : 0;
-        Console.WriteLine($"=== Average  Score By Priority ===\n\n" +
+        writeToFileAndTerminal($"=== Average  Score By Priority ===\n\n" +
                           $"          Priority 1:{(avgPriority1 != 0 ? (avgPriority1).ToString("0.##"):"No reports")}\n" +
                           $"          Priority 2:{(avgPriority2 != 0 ? avgPriority2.ToString("0.##") : "No reports")}\n" +
                           $"          Priority 3:{(avgPriority3 != 0 ? avgPriority3.ToString("0.##") : "No reports")}\n" +
                           $"          Priority 4:{(avgPriority4 != 0 ? avgPriority4.ToString("0.##") : "No reports")}\n" +
                           $"          Priority 5:{(avgPriority5 != 0 ? avgPriority5.ToString("0.##") : "No reports")}\n");
+    }
+    static void writeToFileAndTerminal(string text)
+    {
+        Console.WriteLine(text);
+        string fileName = "output.txt";
+        File.AppendAllText(fileName, text + Environment.NewLine);
     }
     static void Main()
     {
@@ -337,6 +343,7 @@ class Report()
         double[] score = new double[MAX_REPORTS];
         rows = new string[MAX_REPORTS];
 
+        File.WriteAllText("output.txt", string.Empty);
         allRows = LoadFile(nameOfFile);
 
         if(allRows is null)
@@ -347,8 +354,8 @@ class Report()
         validCount = ProcessReports(allRows, unitNames, reportType, reportStatus, priorities, score);
 
         if (validCount > 0) { 
-            Console.WriteLine($"File loaded: {allRows.Length} lines found.\nProccessing complete.\nValid records:{validCount}\ninvalid records:{allRows.Length - validCount}\n");
-            Console.WriteLine($"Stored {validCount} valid records for analysis\n");
+            writeToFileAndTerminal($"File loaded: {allRows.Length} lines found.\nProccessing complete.\nValid records:{validCount}\ninvalid records:{allRows.Length - validCount}\n");
+            writeToFileAndTerminal($"Stored {validCount} valid records for analysis\n");
             
             CalculateAverage(score,validCount);
             FindMaxScore(score,validCount);
@@ -360,7 +367,7 @@ class Report()
             DisplayAveragesByPriority(unitNames,reportType,reportStatus,priorities,score,validCount);
         }
             else {
-            Console.WriteLine("Error there is no any valid rows in file\n");
+            writeToFileAndTerminal("Error there is no any valid rows in file\n");
         }
         
     }
