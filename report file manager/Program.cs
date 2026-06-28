@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 namespace System.IO;
-
 class Report()
 {
     enum ReportType {Collect, Analyze, Recon, Intel}
@@ -147,7 +146,7 @@ class Report()
                 writeToFileAndTerminal("Valid record processed\n");
                 if (validCount < unitNames.Length)
                 {
-                    unitNames[validCount] = splitReportArr[0].Trim();
+                    unitNames[validCount] = splitReportArr[0];
                     reportType[validCount] = convertedType;
                     priorities[validCount] = validPriority;
                     score[validCount] = validScore;
